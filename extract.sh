@@ -45,7 +45,10 @@ for i in "${!offsets[@]}"; do
     OUTPUT_FILE="$OUTPUT_DIR/extracted_file_$i.bin"
     
     # Extract the portion of the file from start offset to end offset
-    dd if="$INPUT_FILE" of="$OUTPUT_FILE" bs=1 skip=$START_DEC count=$LENGTH_DEC status=none
+    # ⚡ Bolt: Optimize file carving speed by increasing block size to 4M
+    # Using iflag=skip_bytes,count_bytes maintains byte-level precision while
+    # drastically reducing the number of system calls required compared to bs=1
+    dd if="$INPUT_FILE" of="$OUTPUT_FILE" bs=4M iflag=skip_bytes,count_bytes skip=$START_DEC count=$LENGTH_DEC status=none
     
     # Check if the extraction was successful
     if [ -f "$OUTPUT_FILE" ]; then
