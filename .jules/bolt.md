@@ -1,0 +1,3 @@
+## 2024-05-18 - File Extraction Performance: dd block size and skip/count
+**Learning:** Using `dd` with `bs=1` for file carving operations is extremely slow due to the massive system call overhead involved in processing one byte at a time. Using a larger block size (e.g., `bs=4M`) in combination with `iflag=skip_bytes,count_bytes` maintains exact byte-level precision while drastically reducing the number of system calls and I/O operations, improving performance exponentially.
+**Action:** Always use `bs=4M iflag=skip_bytes,count_bytes` instead of `bs=1` when extracting sub-sections of files (like carving) using `dd` to maintain high performance without losing byte accuracy.
