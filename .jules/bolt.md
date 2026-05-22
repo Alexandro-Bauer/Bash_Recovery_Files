@@ -1,0 +1,3 @@
+## 2025-02-24 - dd block size optimization
+**Learning:** Using `dd bs=1 skip=... count=...` in bash scripts for exact byte-level file extraction results in one system call per byte, which causes massive overhead and drastically slows down recovery on large files.
+**Action:** Always use a larger block size (e.g., `bs=4M`) combined with `iflag=skip_bytes,count_bytes` instead of `bs=1` to drastically reduce system call overhead while maintaining exact byte-level precision.
