@@ -24,7 +24,6 @@ BOLD='\033[1m'
 
 declare -A SumCount
 declare -A signatures
-declare -A JPGCount
 
 set -e  # script exit immediately if found an error.
 
