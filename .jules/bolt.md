@@ -1,0 +1,3 @@
+## 2026-05-25 - dd Block Size for File Carving
+**Learning:** Using `bs=1` for `dd` when extracting files causes severe performance bottlenecks due to per-byte system calls for reading and writing. This is a common anti-pattern in shell scripts performing file carving. GNU `dd` supports `iflag=skip_bytes,count_bytes` which allows using a large block size (e.g. `bs=4M`) while retaining exact byte-precision skips and counts.
+**Action:** Always check `dd` usage in shell scripts. If `bs=1` is used with `skip` and `count`, replace it with `bs=4M iflag=skip_bytes,count_bytes` to improve I/O performance by orders of magnitude without losing extraction accuracy.
