@@ -1,0 +1,3 @@
+## 2026-05-31 - [Optimize dd block size]
+**Learning:** Using `bs=1` with `dd` for precise byte-level extraction causes massive system call overhead (taking ~26s for just 10MB). We can achieve the exact same byte precision but with near-instant speed (~0.03s for 10MB) by using a larger block size (e.g., `bs=4M`) alongside `iflag=skip_bytes,count_bytes`, which tells `dd` to treat `skip` and `count` as bytes rather than blocks.
+**Action:** Whenever using `dd` for file carving where exact byte offsets are required, prefer `bs=4M iflag=skip_bytes,count_bytes` over `bs=1` to ensure optimal performance without sacrificing correctness.
