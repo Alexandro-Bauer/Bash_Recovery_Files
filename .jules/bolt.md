@@ -1,0 +1,3 @@
+## 2024-06-07 - Optimize `dd` performance by increasing block size
+**Learning:** By default, `dd` with `bs=1` issues a read/write system call per byte, which creates enormous I/O bottleneck overhead, particularly for larger files during extraction. Changing the block size to `4M` avoids this, but we also must use the `iflag=skip_bytes,count_bytes` flag to allow `skip` and `count` arguments to correctly interpret their inputs in bytes instead of blocks.
+**Action:** Always prefer large block sizes (e.g., `bs=4M`) for `dd` extraction routines and pair it with `iflag=skip_bytes,count_bytes` when precise byte-level seeking/counting is needed.
