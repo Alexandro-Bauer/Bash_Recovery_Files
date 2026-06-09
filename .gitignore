@@ -1,0 +1,7 @@
+test_dest/
+testfile.bin
+out1.bin
+out2.bin
+dummy.dd
+out.dd
+*.bak

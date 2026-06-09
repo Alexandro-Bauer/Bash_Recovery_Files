@@ -1,0 +1,3 @@
+## 2024-03-24 - Optimizing dd performance
+**Learning:** Using `dd` with `bs=1` causes extreme system call overhead, reading and writing exactly one byte at a time. This is painfully slow, as we saw in the test taking ~5 seconds for 2MB. By using a larger block size (`bs=4M`) and combining it with `iflag=skip_bytes,count_bytes`, we can tell `dd` to skip and count by exact byte offsets while still transferring data in large chunks. This improved the same 2MB extraction from ~5s to ~0.016s!
+**Action:** Always prefer `iflag=skip_bytes,count_bytes` over `bs=1` for byte-precise `dd` operations to maximize throughput.
