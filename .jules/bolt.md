@@ -1,0 +1,3 @@
+## 2024-06-10 - Massively accelerating `dd` extraction
+**Learning:** Using `dd bs=1` for exact byte extraction creates massive system call overhead (e.g., reading/writing 5MB takes ~13 seconds). However, exact byte-level extraction can be achieved drastically faster (e.g., 5MB in ~0.04 seconds) by combining a large block size (`bs=4M`) with `iflag=skip_bytes,count_bytes` to read the exact specified byte boundaries without reverting to 1-byte system calls.
+**Action:** When using `dd` for file carving or specific byte extraction, always use a large block size combined with `iflag=skip_bytes,count_bytes` instead of `bs=1` to minimize overhead while retaining byte precision.
