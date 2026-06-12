@@ -1,0 +1,3 @@
+## 2026-06-12 - [Optimize dd block size for performance]
+**Learning:** In Bash file parsing/extraction tools utilizing `dd` to fetch specific byte offsets, running `dd bs=1 count=X skip=Y` forces the system to execute an independent `read()` and `write()` operation per byte. For larger files, this incurs immense system call overhead.
+**Action:** When extracting data using byte offsets, scale the block size up (e.g. `bs=4M`) and combine it with byte-based counting flags like `iflag=skip_bytes,count_bytes` (or `iflag=count_bytes,skip_bytes`). This optimizes raw throughput to near-disk-speed while maintaining granular byte precision.
