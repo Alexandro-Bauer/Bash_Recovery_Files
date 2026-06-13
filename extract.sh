@@ -45,7 +45,8 @@ for i in "${!offsets[@]}"; do
     OUTPUT_FILE="$OUTPUT_DIR/extracted_file_$i.bin"
     
     # Extract the portion of the file from start offset to end offset
-    dd if="$INPUT_FILE" of="$OUTPUT_FILE" bs=1 skip=$START_DEC count=$LENGTH_DEC status=none
+    # Optimization: Use bs=4M and iflag=skip_bytes,count_bytes to reduce syscall overhead while maintaining precision
+    dd if="$INPUT_FILE" of="$OUTPUT_FILE" bs=4M skip=$START_DEC count=$LENGTH_DEC iflag=skip_bytes,count_bytes status=none
     
     # Check if the extraction was successful
     if [ -f "$OUTPUT_FILE" ]; then
