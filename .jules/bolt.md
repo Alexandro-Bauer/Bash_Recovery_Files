@@ -1,0 +1,3 @@
+## 2024-06-16 - File carving with dd performance optimization
+**Learning:** Using `dd` with `bs=1` for precise file carving operations introduces massive system call overhead (a write system call for every single byte), drastically slowing down file recovery and extraction in Bash scripts.
+**Action:** Always use a larger block size (e.g., `bs=4M`) combined with `iflag=skip_bytes,count_bytes` when doing byte-level precision file carving with `dd`. This dramatically reduces system call overhead and significantly improves performance without compromising the exact byte offsets and sizes required for forensic recovery.
