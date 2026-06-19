@@ -1,0 +1,3 @@
+## 2024-06-19 - Optimize dd block sizes
+**Learning:** File extraction mechanisms in Bash that rely on parsing byte locations via `dd bs=1` are extremely inefficient because they generate one system call for every single byte copied. This causes massive CPU overhead and severely chokes throughput.
+**Action:** Always replace `dd bs=1` operations where specific offsets and counts are required with GNU's advanced block size parsing, specifically by using a high block size (e.g., `bs=4M`) in tandem with `iflag=skip_bytes,count_bytes` to retain exact byte extraction logic but dramatically reduce the raw system call frequency.
