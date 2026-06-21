@@ -365,7 +365,9 @@ for req in "${UserRequest[@]}"; do
       if [ $count -gt 0 ]; then
         FileSectorLocation=$((FileStartLocation / 512))
         RecoveredFilePath="${category_path}/${req}_${recovery_date}_${FileSectorLocation}.${req}"
-        dd if="$filename" of="$RecoveredFilePath" bs=1 skip=$FileStartLocation count=$count conv=notrunc >&/dev/null
+        # ⚡ Bolt: Optimize performance by using 4MB chunks (bs=4M) instead of byte-by-byte (bs=1)
+        # Use iflag=skip_bytes,count_bytes to maintain exact precision while drastically reducing sys calls
+        dd if="$filename" of="$RecoveredFilePath" bs=4M iflag=skip_bytes,count_bytes skip=$FileStartLocation count=$count conv=notrunc >&/dev/null
         if [ $? -eq 0 ]; then
           SumLog+=("$(printf "%3s\t%3s\t%3s\t" "$RecoveredFilePath" "$FileStartLocation" "$count")")
           SumCount[$req]=$((SumCount[$req] + 1))
