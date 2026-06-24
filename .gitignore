@@ -1,0 +1,9 @@
+test_disk.dd
+baseline_dir/
+optimized_dir/
+baseline_extract_dir/
+optimized_extract_dir/
+test_extract_unopt.sh
+test_extract_opt.sh
+out_perf*.dd
+test_perf.dd
