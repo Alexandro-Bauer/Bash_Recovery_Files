@@ -1,0 +1,3 @@
+## 2026-06-25 - GNU dd file carving performance
+**Learning:** Using `dd` with `bs=1` for file carving forces the OS to perform a system call for every single byte, which is catastrophically slow. However, if GNU `dd` is available, we can use a much larger block size (e.g., `bs=4M`) while retaining exact byte-level precision by passing `iflag=skip_bytes,count_bytes`. This allows `skip` and `count` to continue operating in bytes rather than blocks.
+**Action:** Always check if GNU `dd` is being used in a file extraction context where byte-level precision is needed. If so, immediately apply `bs=4M iflag=skip_bytes,count_bytes` as a standard optimization to drastically reduce I/O overhead.
