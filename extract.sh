@@ -45,17 +45,18 @@ for i in "${!offsets[@]}"; do
     OUTPUT_FILE="$OUTPUT_DIR/extracted_file_$i.bin"
     
     # Extract the portion of the file from start offset to end offset
-    dd if="$INPUT_FILE" of="$OUTPUT_FILE" bs=1 skip=$START_DEC count=$LENGTH_DEC status=none
+    # Bolt optimization: Use 4M block size with skip_bytes/count_bytes to drastically reduce syscall overhead
+    dd if="$INPUT_FILE" of="$OUTPUT_FILE" bs=4M iflag=skip_bytes,count_bytes skip=$START_DEC count=$LENGTH_DEC status=none
     
     # Check if the extraction was successful
     if [ -f "$OUTPUT_FILE" ]; then
         echo "File extracted successfully to $OUTPUT_FILE"
-
-        # Extract and display metadata using exiftool
-        exiftool "$OUTPUT_FILE" > "$OUTPUT_FILE.metadata.txt"
-        
-        echo "Metadata extraction complete for $OUTPUT_FILE"
     else
         echo "File extraction failed for offsets $START_DEC - $END_DEC."
     fi
 done
+
+# Bolt optimization: Batch process all extracted files with a single exiftool process
+echo "Starting batch metadata extraction..."
+exiftool -ext bin -w! '%d%F.metadata.txt' "$OUTPUT_DIR"
+echo "Metadata extraction complete for all files in $OUTPUT_DIR"
