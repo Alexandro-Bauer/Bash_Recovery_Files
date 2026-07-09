@@ -1,0 +1,3 @@
+## 2026-07-09 - [Byte-level file carving in shell scripts]
+**Learning:** `dd bs=1 skip=N count=M` is incredibly slow because it reads and writes byte-by-byte via system calls. `dd bs=4M iflag=skip_bytes` is extremely fast but GNU-specific (breaks on BSD/macOS). The `tail -c +$((start + 1)) "$file" | head -c $count > "$output"` pipeline is both highly portable and block-buffered, making it exponentially faster. Also, ExifTool batching uses `%d%f.%e.metadata.txt`, not `%d%F`.
+**Action:** Always prefer `tail | head` for byte-level extraction in portable shell scripts. Always test `exiftool` batch format strings to ensure correct behavior.
