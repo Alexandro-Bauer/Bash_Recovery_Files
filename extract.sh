@@ -45,17 +45,17 @@ for i in "${!offsets[@]}"; do
     OUTPUT_FILE="$OUTPUT_DIR/extracted_file_$i.bin"
     
     # Extract the portion of the file from start offset to end offset
-    dd if="$INPUT_FILE" of="$OUTPUT_FILE" bs=1 skip=$START_DEC count=$LENGTH_DEC status=none
+    # Optimized: Use tail and head for portable, high-performance byte-level file carving
+    tail -c +$((START_DEC + 1)) "$INPUT_FILE" | head -c $LENGTH_DEC > "$OUTPUT_FILE"
     
     # Check if the extraction was successful
     if [ -f "$OUTPUT_FILE" ]; then
         echo "File extracted successfully to $OUTPUT_FILE"
-
-        # Extract and display metadata using exiftool
-        exiftool "$OUTPUT_FILE" > "$OUTPUT_FILE.metadata.txt"
-        
-        echo "Metadata extraction complete for $OUTPUT_FILE"
     else
         echo "File extraction failed for offsets $START_DEC - $END_DEC."
     fi
 done
+
+# Extract and display metadata using exiftool in batch mode to minimize process startup overhead
+exiftool -w! '%d%f.%e.metadata.txt' -ext bin "$OUTPUT_DIR"
+echo "Metadata extraction complete for all extracted files in $OUTPUT_DIR"
