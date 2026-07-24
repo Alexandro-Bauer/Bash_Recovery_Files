@@ -365,7 +365,11 @@ for req in "${UserRequest[@]}"; do
       if [ $count -gt 0 ]; then
         FileSectorLocation=$((FileStartLocation / 512))
         RecoveredFilePath="${category_path}/${req}_${recovery_date}_${FileSectorLocation}.${req}"
-        dd if="$filename" of="$RecoveredFilePath" bs=1 skip=$FileStartLocation count=$count conv=notrunc >&/dev/null
+
+        # ⚡ Bolt Optimization: Replaced slow `dd bs=1` with highly performant `tail | head` pipeline
+        # `dd bs=1` performs 1-byte read/write loops, which is extremely slow. `tail -c` and `head -c` use block I/O.
+        # Note: tail -c +N is 1-indexed (starts at byte N), so we add +1 to the 0-indexed FileStartLocation.
+        tail -c +$((FileStartLocation + 1)) "$filename" | head -c $count > "$RecoveredFilePath"
         if [ $? -eq 0 ]; then
           SumLog+=("$(printf "%3s\t%3s\t%3s\t" "$RecoveredFilePath" "$FileStartLocation" "$count")")
           SumCount[$req]=$((SumCount[$req] + 1))
