@@ -1,0 +1,3 @@
+## 2024-05-18 - Replacing slow byte-level dd carving with tail/head pipeline
+**Learning:** Using `dd bs=1 skip=$N count=$M` for file carving is exceptionally slow because it reads the file byte by byte, which incurs massive I/O overhead.
+**Action:** Replace `dd bs=1 skip=$N count=$M` with the highly portable and performant pipeline `tail -c +$((N + 1)) "$file" 2>/dev/null | head -c $M > "$output"`. Note that `tail -c` is 1-indexed (so we add 1 to the skip offset) and redirect `tail` stderr to avoid SIGPIPE errors if `head` closes the pipe early. Ensure error handling correctly checks the exit status or file integrity instead of solely relying on `$?` which might capture only `head`'s success.
