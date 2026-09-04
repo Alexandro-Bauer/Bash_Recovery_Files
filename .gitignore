@@ -1,0 +1,13 @@
+dummy.bin
+urandom_data
+jpg_header
+jpg_footer
+test.dd
+baseline_mcsdf/
+baseline_extract/
+baseline_extract.sh
+optimized_mcsdf/
+optimized_extract/
+optimized_extract.sh
+out_dd
+out_tail
