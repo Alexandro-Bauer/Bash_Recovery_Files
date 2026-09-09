@@ -1,0 +1,3 @@
+## 2024-05-24 - [Avoid dd bs=1 for File Carving]
+**Learning:** Using `dd` with `bs=1` for file carving operations is extremely slow in bash scripts, causing a severe performance bottleneck. It processes data byte-by-byte instead of using buffers. Replacing it with a `tail -c +N | head -c M` pipeline provides a massive speedup. However, `tail` may receive a SIGPIPE when `head` completes reading.
+**Action:** When using `tail | head` for carving, always suppress `tail`'s standard error by redirecting it (e.g., `tail -c +N "$file" 2>/dev/null | head -c M > "$output"`) to prevent unexpected script termination under `set -e`. Additionally, `tail -c +N` is 1-indexed, while `dd skip=N` is 0-indexed, so ensure to add +1 to the start offset when converting.
