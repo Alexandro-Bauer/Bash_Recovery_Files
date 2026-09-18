@@ -1,0 +1,3 @@
+## 2024-09-17 - [Optimizing Byte-level File Carving in Bash]
+**Learning:** Using `dd bs=1 skip=N` in bash scripts is extremely slow for byte-level extraction due to processing byte-by-byte instead of using buffers. A pipeline like `tail -c +$((N + 1)) | head -c M` is vastly more performant while maintaining standard POSIX/coreutils compatibility. When making this switch, zero-byte file handling must be actively checked with `[ -s "$file" ]`.
+**Action:** Always prefer `tail -c | head -c` over `dd bs=1` for file slicing in scripts. Suppress `tail` standard error to avoid SIGPIPE noise when used with `set -e`.
