@@ -289,7 +289,7 @@ for req in "${UserRequest[@]}"; do
   echo "- $req"
 done
 
-sleep 5
+#sleep 5
 
 # Display custom signatures if any
 if [ -n "${signatures[CUSTOM]}" ]; then
@@ -365,8 +365,9 @@ for req in "${UserRequest[@]}"; do
       if [ $count -gt 0 ]; then
         FileSectorLocation=$((FileStartLocation / 512))
         RecoveredFilePath="${category_path}/${req}_${recovery_date}_${FileSectorLocation}.${req}"
-        dd if="$filename" of="$RecoveredFilePath" bs=1 skip=$FileStartLocation count=$count conv=notrunc >&/dev/null
-        if [ $? -eq 0 ]; then
+        # ⚡ Bolt Optimization: Replaced slow dd bs=1 with fast tail | head pipeline to eliminate major I/O bottleneck during file carving
+        tail -c +$((FileStartLocation + 1)) "$filename" 2>/dev/null | head -c $count > "$RecoveredFilePath"
+        if [ $? -eq 0 ] && [ -s "$RecoveredFilePath" ]; then
           SumLog+=("$(printf "%3s\t%3s\t%3s\t" "$RecoveredFilePath" "$FileStartLocation" "$count")")
           SumCount[$req]=$((SumCount[$req] + 1))
         fi
