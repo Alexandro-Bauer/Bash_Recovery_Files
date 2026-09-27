@@ -1,0 +1,3 @@
+## 2026-09-27 - Byte-level File Carving Optimization
+**Learning:** Using `dd bs=1` for byte-level extraction in bash scripts is extremely slow due to massive overhead. A standard pipeline of `tail -c +$((start + 1)) | head -c $count` provides the same byte-level extraction but operates vastly faster. We must suppress `tail` stderr (`2>/dev/null`) to avoid SIGPIPE errors.
+**Action:** Always prefer `tail | head` pipelines for byte-level extraction over `dd bs=1` in bash scripts when `dd iflag=skip_bytes` is unavailable or non-portable. Check file size with `[ -s "$file" ]` when validating output.
