@@ -1,0 +1,3 @@
+## 2026-10-04 - [Replace dd with tail|head for fast byte-level file carving]
+**Learning:** For byte-level file carving in shell scripts, `dd bs=1 skip=N` is extremely slow because it forces one-byte I/O operations. Using the highly portable pipeline `tail -c +$((N + 1)) "$file" | head -c $count` provides immense speed improvements while maintaining compatibility.
+**Action:** Replace `dd bs=1` operations with `tail -c | head -c` when carving files dynamically, but remember that `tail` is 1-indexed (`+N+1`) whereas `dd`'s skip is 0-indexed, and always pipe stderr to `/dev/null` to prevent SIGPIPE errors from breaking strict shell modes.
