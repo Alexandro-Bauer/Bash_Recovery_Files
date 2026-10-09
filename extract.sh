@@ -44,11 +44,12 @@ for i in "${!offsets[@]}"; do
     # Define the output file name
     OUTPUT_FILE="$OUTPUT_DIR/extracted_file_$i.bin"
     
-    # Extract the portion of the file from start offset to end offset
-    dd if="$INPUT_FILE" of="$OUTPUT_FILE" bs=1 skip=$START_DEC count=$LENGTH_DEC status=none
+    # ⚡ Bolt Optimization: Replaced 'dd bs=1' with 'tail | head' pipeline for significantly faster byte-level file carving.
+    # tail -c is 1-indexed, so we add 1 to START_DEC. 2>/dev/null suppresses tail's SIGPIPE error when head finishes.
+    tail -c +$((START_DEC + 1)) "$INPUT_FILE" 2>/dev/null | head -c $LENGTH_DEC > "$OUTPUT_FILE"
     
     # Check if the extraction was successful
-    if [ -f "$OUTPUT_FILE" ]; then
+    if [ $? -eq 0 ] && [ -s "$OUTPUT_FILE" ]; then
         echo "File extracted successfully to $OUTPUT_FILE"
 
         # Extract and display metadata using exiftool
