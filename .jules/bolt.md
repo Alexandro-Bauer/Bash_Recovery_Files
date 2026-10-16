@@ -1,0 +1,3 @@
+## 2026-10-16 - Optimize byte-level file extraction speed
+**Learning:** The use of `dd bs=1 skip=N count=M` is extremely slow for carving files out of disk images because it processes data byte-by-byte. A pipeline using `tail -c +$((N + 1)) | head -c M` avoids this overhead and achieves orders-of-magnitude faster performance for byte-level extraction without requiring GNU-specific `iflag=skip_bytes`.
+**Action:** When carving files at byte offsets in bash, always use `tail -c +N | head -c M` instead of `dd bs=1`, taking care to note that `tail -c` is 1-indexed. Ensure errors from `tail` are suppressed and check file size with `[ -s "$file" ]` to maintain robustness.
