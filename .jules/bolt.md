@@ -1,0 +1,3 @@
+## 2024-10-25 - Extreme Performance Discrepancy in Bash Byte Carving
+**Learning:** When carving specific byte ranges from files in Bash, using `dd bs=1` is catastrophically slow due to the massive overhead of reading/writing byte-by-byte. For a 5MB extraction, `dd bs=1` took ~13.3s.
+**Action:** Always prefer the highly optimized pipeline `tail -c +$((START + 1)) "$FILE" 2>/dev/null | head -c $COUNT > "$OUTPUT"` for byte-level extraction. This completes the same 5MB extraction in ~0.04s, yielding a ~330x performance improvement while remaining POSIX/GNU compliant. Always use `[ -s "$OUTPUT" ]` to verify pipeline success rather than checking `$?`.
