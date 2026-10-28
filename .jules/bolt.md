@@ -1,0 +1,3 @@
+## 2024-05-18 - [Optimized Byte-Level Carving]
+**Learning:** `dd bs=1` is a severe performance bottleneck for byte-level file carving in shell scripts due to its one-byte-at-a-time read/write system calls.
+**Action:** Replaced `dd bs=1` with the highly portable and performant `tail -c | head -c` pipeline to minimize system calls and improve I/O throughput. When using this pipeline, verify file integrity using `[ -s "$file" ]` instead of checking `$?`, as the pipeline exit status may not capture upstream errors. Also, `tail`'s standard error should be redirected (`2>/dev/null`) to suppress SIGPIPE errors when `head` finishes early.
