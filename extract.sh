@@ -44,11 +44,13 @@ for i in "${!offsets[@]}"; do
     # Define the output file name
     OUTPUT_FILE="$OUTPUT_DIR/extracted_file_$i.bin"
     
-    # Extract the portion of the file from start offset to end offset
-    dd if="$INPUT_FILE" of="$OUTPUT_FILE" bs=1 skip=$START_DEC count=$LENGTH_DEC status=none
+    # ⚡ Bolt Optimization: Replace slow 'dd bs=1' with highly optimized 'tail | head' pipeline
+    # This avoids thousands of read/write syscall overhead.
+    # Note: tail -c +N is 1-indexed, so we add 1 to the 0-indexed START_DEC.
+    tail -c +$((START_DEC + 1)) "$INPUT_FILE" 2>/dev/null | head -c $LENGTH_DEC > "$OUTPUT_FILE"
     
-    # Check if the extraction was successful
-    if [ -f "$OUTPUT_FILE" ]; then
+    # Check if the extraction was successful (and file is not empty due to 0-length extract failure)
+    if [ -s "$OUTPUT_FILE" ]; then
         echo "File extracted successfully to $OUTPUT_FILE"
 
         # Extract and display metadata using exiftool
