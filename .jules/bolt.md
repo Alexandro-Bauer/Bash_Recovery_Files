@@ -1,0 +1,3 @@
+## 2026-11-01 - [Optimize byte-level carving by replacing dd with tail|head]
+**Learning:** In Bash, byte-level file extraction using `dd bs=1` is excruciatingly slow due to high overhead per byte processed. The `tail | head` pipeline (`tail -c +$((START_BYTE + 1)) | head -c $LENGTH`) is significantly faster and portable. Furthermore, when checking for successful extraction using pipelines, checking `$?` is error-prone because it only reflects the last command. Using `[ -s "$file" ]` correctly guarantees that non-empty bytes were successfully written.
+**Action:** Replace `dd bs=1 skip=X count=Y` with `tail -c +$((X + 1)) "$file" 2>/dev/null | head -c Y > "$out"` and verify the operation using `[ -s "$out" ]`.
