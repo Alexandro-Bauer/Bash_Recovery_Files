@@ -1,0 +1,3 @@
+## 2024-11-10 - File Carving Performance Optimization
+**Learning:** For byte-level file carving in shell scripts, `dd bs=1` is extremely slow due to the 1-byte block size processing. The highly portable and performant pipeline `tail -c +$((start + 1)) "$file" | head -c $count > "$output"` provides dramatic speedups. Note that `+1` is necessary because `tail -c +N` is 1-indexed, while `dd skip=N` is 0-indexed. When replacing `dd` with this pipeline, validating with `if [ -s "$output" ];` instead of `$?` is required because `$?` only checks the last command (`head`) and not the entire pipeline's success.
+**Action:** Always prefer the `tail | head` pipeline over `dd bs=1` for byte-level extraction in bash scripts, and always use `[ -s ]` for validation.
